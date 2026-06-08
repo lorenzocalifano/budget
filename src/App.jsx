@@ -257,9 +257,14 @@ function App() {
     
     try {
         const parsed = JSON.parse(reply);
-        return parsed.risposta;
+        return parsed.risposta || reply;
     } catch(e) {
-        return reply; // Fallback to raw text if JSON fails
+        // Fallback to manual extraction as requested
+        const match = reply.match(/"risposta"\s*:\s*"([\s\S]*?)"(?=\s*}| \`|$)/);
+        if (match && match[1]) {
+            return match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+        }
+        return reply; // Ultimate fallback to raw text
     }
   };
 
